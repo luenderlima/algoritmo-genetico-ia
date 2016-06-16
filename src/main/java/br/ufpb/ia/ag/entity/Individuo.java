@@ -52,37 +52,58 @@ public class Individuo implements Comparable<Individuo> {
     	Random random = new Random();
         this.grade = genes;
     
-        //Se for mutar, inverte a posi��o entre dois genes
+        //Se for realizar a mutação, inverte a posição entre dois genes
         if (random.nextDouble() <= Algoritmo.getTaxaDeMutacao()) {
+        	int indiceDia1;
+        	int indiceDia2;
+        	int posicaoAleatoria1;
+        	int posicaoAleatoria2;
         	
-        	int indiceDia1 = random.nextInt(Dados.getDiasDaSemana().length);
-        	//Loop enquanto o dia sorteado n�o possuir nenhum slot alocado
-        	while(genes.get(indiceDia1).size() == 0){
-        		indiceDia1 = random.nextInt(Dados.getDiasDaSemana().length);
-        	}
-        	int indiceDia2 = random.nextInt(Dados.getDiasDaSemana().length);
-        	//Loop enquanto o dia sorteado n�o possuir nenhum slot alocado
-        	while(genes.get(indiceDia2).size() == 0){
-        		indiceDia2 = random.nextInt(Dados.getDiasDaSemana().length);
-        	}
-        	
-        	int posicaoAleatoria1 = random.nextInt(genes.get(indiceDia1).size());
-        	int posicaoAleatoria2 = random.nextInt(genes.get(indiceDia2).size());
+        	do {
+	        	indiceDia1 = random.nextInt(Dados.getDiasDaSemana().length);
+	        	
+	        	//Enquanto o dia sorteado não possuir nenhum slot alocado
+	        	while(genes.get(indiceDia1).size() == 0){
+	        		indiceDia1 = random.nextInt(Dados.getDiasDaSemana().length);
+	        	}
+	        	
+	        	indiceDia2 = random.nextInt(Dados.getDiasDaSemana().length);
+	      
+	        	//Enquanto o dia sorteado não possuir nenhum slot alocado
+	        	while(genes.get(indiceDia2).size() == 0){
+	        		indiceDia2 = random.nextInt(Dados.getDiasDaSemana().length);
+	        	}
+	        	
+	        	posicaoAleatoria1 = random.nextInt(genes.get(indiceDia1).size());
+	        	posicaoAleatoria2 = random.nextInt(genes.get(indiceDia2).size());
+	        	
+	        	//Verifica se não está pegando o mesmo gene
+        	} while(indiceDia1 == indiceDia2 && posicaoAleatoria1 == posicaoAleatoria2);
         	
         	Slot slot1 = genes.get(indiceDia1).get(posicaoAleatoria1);
         	Slot slot2 = genes.get(indiceDia2).get(posicaoAleatoria2);
         	
-        	//Substitui a posi��o de dois genes aleat�rios
+        	//Atualiza os horários dos slots que serão trocados
+        	String diaDaSemanaSlot1 = slot1.getHorario().getDiaDaSemana();
+        	String horarioAulaSlot1 = slot1.getHorario().getHorarioAula();
+        	
+        	slot1.getHorario().setDiaDaSemana(slot2.getHorario().getDiaDaSemana());
+        	slot1.getHorario().setHorarioAula(slot2.getHorario().getHorarioAula());
+        	
+        	slot2.getHorario().setDiaDaSemana(diaDaSemanaSlot1);
+        	slot2.getHorario().setHorarioAula(horarioAulaSlot1);
+        	
+        	//Substitui a posição dos dois genes
         	genes.get(indiceDia1).set(posicaoAleatoria1, slot2);
         	genes.get(indiceDia2).set(posicaoAleatoria2, slot1);
         	
         }
-        this.grade = genes;
+        
         geraAptidao();
     }
 
     /**
-     * Calcula o valor de aptid�o do indiv�duo
+     * Calcula o valor da aptidão do indivíduo
      */
     private void geraAptidao() {
     	this.aptidao = 0;
@@ -92,17 +113,16 @@ public class Individuo implements Comparable<Individuo> {
     		for(Slot slot: slots) {
     			acertou = false;
     			
-    			//Varre a lista de hor�rios preferidos do professor
-    			for(Horario horarioDisponivel: slot.getDisciplina().getProfessor().getHorariosPreferidos()) {
+    			//Varre a lista de horários preferidos do professor
+    			for(Horario horarioPreferido: slot.getDisciplina().getProfessor().getHorariosPreferidos()) {
     				
-    				// Verifica se o hor�rio do slot � um hor�rio de prefer�ncia do professor
-    				if(horarioDisponivel.getDiaDaSemana().equals(slot.getHorario().getDiaDaSemana())
-    					&&	horarioDisponivel.getHorarioAula().equals(slot.getHorario().getHorarioAula())) {
+    				// Verifica se o horário do slot é um horário de preferência do professor
+    				if(horarioPreferido.getDiaDaSemana().equals(slot.getHorario().getDiaDaSemana())
+    					&& horarioPreferido.getHorarioAula().equals(slot.getHorario().getHorarioAula())) {
     					    					
     					slot.setApto(true);
     					acertou = true;
-    					this.aptidao += 1;
-    					    					
+    					this.aptidao++;
     				} 
     			}
     			if(!acertou) {

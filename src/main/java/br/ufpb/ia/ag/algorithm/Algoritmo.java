@@ -23,20 +23,20 @@ public class Algoritmo {
         //Nova popula��o do mesmo tamanho da antiga
         Populacao novaPopulacao = new Populacao(); //parametro: populacao.getTamPopulacao()
 
-        //Se tiver elitismo, mant�m o melhor indiv�duo da gera��o atual
+        //Se tiver elitismo, mantém o melhor indivíduo da geração atual
         if (elitismo) {
             novaPopulacao.adicionarIndividuo(populacao.getIndividuo(0));
         }
         
         //Insere novos indivíduos na nova população, até atingir o tamanho máximo de indivíduos
-        while (novaPopulacao.getTamPopulacao() < Dados.getTamanhoMaximoPopulacao()+1) {
+        while (novaPopulacao.getTamPopulacao() < Dados.getTamanhoMaximoPopulacao()) {
         	
             //Seleciona os 2 pais por torneio
             Individuo[] pais = selecaoTorneio(populacao);
 
             Individuo[] filhos = new Individuo[2];
 
-            //Verifica a taxa de crossover: se dentro da taxa, realiza o crossover, se n�o, mant�m os pais selecionados para a pr�xima gera��o
+            //Verifica a taxa de crossover: se dentro da taxa, realiza o crossover, senão, mantém os pais selecionados para a próxima geração
             if (random.nextDouble() <= taxaDeCrossover) {
                 filhos = crossover(pais[1], pais[0]);
             } else {
@@ -59,7 +59,7 @@ public class Algoritmo {
         Random random = new Random();
         Populacao populacaoIntermediaria = new Populacao(); //Populacao populacaoIntermediaria = new Populacao(3);
         
-        //Seleciona 3 indiv�duos aleatoriamente na popula��o
+        //Seleciona 3 indivíduos aleatoriamente na população
         populacaoIntermediaria.adicionarIndividuo(populacao.getIndividuo(random.nextInt(populacao.getTamPopulacao())));
         populacaoIntermediaria.adicionarIndividuo(populacao.getIndividuo(random.nextInt(populacao.getTamPopulacao())));
         populacaoIntermediaria.adicionarIndividuo(populacao.getIndividuo(random.nextInt(populacao.getTamPopulacao())));
@@ -86,17 +86,28 @@ public class Algoritmo {
         Slot slot;
         List<Slot> slotsFilho1 = new ArrayList<Slot>();
         List<Slot> slotsFilho2 = new ArrayList<Slot>();
-        
-        List<Disciplina> disciplinasNaoAlocadasFilho1 = getDisciplinas(); 
-        List<Disciplina> disciplinasNaoAlocadasFilho2 = getDisciplinas(); 
+                
+        List<Disciplina> disciplinasNaoAlocadasFilho1 = new ArrayList<Disciplina>();
+    	
+    	//Adiciona as disciplinas que deverão ser alocadas na lista auxiliar
+    	for(Disciplina disciplina: Algoritmo.getDisciplinas()) {
+    		disciplinasNaoAlocadasFilho1.add(disciplina);
+    	}
+    	
+    	List<Disciplina> disciplinasNaoAlocadasFilho2 = new ArrayList<Disciplina>();
+    	
+    	//Adiciona as disciplinas que deverão ser alocadas na lista auxiliar
+    	for(Disciplina disciplina: Algoritmo.getDisciplinas()) {
+    		disciplinasNaoAlocadasFilho2.add(disciplina);
+    	}
         
         //Lista os slots dos genes dos pais 
         List<Slot> slotsPai1 = listarSlots(individuo1.getGenes());
     	List<Slot> slotsPai2 = listarSlots(individuo2.getGenes());
         
-        //sorteia o ponto de corte
-        int pontoCorte1 = random.nextInt((individuo1.getGenes().size()/2) -1) + 1;
-        int pontoCorte2 = random.nextInt((individuo1.getGenes().size()/2) -1) + individuo1.getGenes().size()/2;
+        //Estabelece os pontos de corte 
+        int pontoCorte1 = 2; 					// random.nextInt((individuo1.getGenes().size()/2) -1) + 1
+        int pontoCorte2 = 3;					// random.nextInt((individuo1.getGenes().size()/2) -1) + individuo1.getGenes().size()/2
         //int pontoCorte1 = random.nextInt(2)+2;
         //int pontoCorte2 = pontoCorte1+random.nextInt(2)+2;
                 
@@ -114,11 +125,11 @@ public class Algoritmo {
         int i = 0;
         //Realiza o corte e cria os novos genes dos filhos
         //Filho 1 recebe primeira parte do pai 1 e Filho 2 recebe primeira parte do pai 2
-        for(i=0; i < pontoCorte1; i++) {
+        for(i=0; i < pontoCorte1; i++) {  
         	slot = slotsPai1.get(i);
-        	indiceDia = Dados.getIndiceDiaDaSemana(slot.getHorario().getDiaDaSemana());
+        	indiceDia = Dados.getIndiceDiaDaSemana(slot.getHorario().getDiaDaSemana());  
         	//Se o slot do pai ainda n�o existir no filho 1, ele ser� alocado 
-        	//Testa o slot para que n�o haja tarefas repetidas em uma mesma grade
+        	//Testa o slot para que n�o haja disciplinas repetidas em uma mesma grade
         	if(validaAlocacao(slot.getDisciplina(), disciplinasNaoAlocadasFilho1)) {
         		avaliarHorario(slot.getHorario(), slotsFilho1);
             	genesFilho1.get(indiceDia).add(slot);
@@ -156,7 +167,7 @@ public class Algoritmo {
         	//Se o slot do pai ainda n�o existir no filho 1, ele ser� alocado 
         	//Testa o slot para que n�o haja tarefas repetidas em uma mesma grade
         	if(validaAlocacao(slot.getDisciplina(), disciplinasNaoAlocadasFilho1)) {
-        		avaliarHorario(slot.getHorario(), slotsFilho1);
+        		avaliarHorario(slot.getHorario(), slotsFilho1); //Muda o horário do slot caso o horário já esteja preenchido na grade do filho 
             	genesFilho1.get(indiceDia).add(slot);
                 slotsFilho1.add(slot);
         	} 
@@ -227,12 +238,12 @@ public class Algoritmo {
     }
     
     /**
-     * Verifica se a tarefa j� existe na lista de tarefas n�o alocadas, caso exista, remove a tarefa em quest�o
-     * @return Verdadeiro, se a lista de tarefas n�o alocadas possuir a tarefa passada. Falso, caso contr�rio
+     * Verifica se a disciplina já existe na lista de disciplinas não alocadas, caso exista, remove a disciplina em quest�o
+     * @return Verdadeiro, se a lista de disciplinas não alocadas possuir a disciplina passada. Falso, caso contrário
      */
     public static boolean validaAlocacao(Disciplina disciplina, List<Disciplina> disciplinasNaoAlocadas) {
     	for(Disciplina d: disciplinasNaoAlocadas) {
-    		if(disciplina.equals(d.getNome().toUpperCase())) {   
+    		if(disciplina.getNome().equals(d.getNome())) {   
     			disciplinasNaoAlocadas.remove(d);
     			return true;
     		}
@@ -241,19 +252,40 @@ public class Algoritmo {
     }
     
     /**
-     * Altera o hor�rio do slot se ele j� estiver ocupado na grade
+     * Altera o horário do slot se ele já estiver ocupado na grade
      */
     public static void avaliarHorario(Horario horario, List<Slot> slots) {
     	Random random = new Random();
+    	boolean mudouHorario;
+    	
     	for(Slot s: slots) {
-    		if(s.getHorario().getDiaDaSemana().toUpperCase().equals(horario.getDiaDaSemana().toUpperCase())
-    				&& s.getHorario().equals(horario)) {
+    		if(s.getHorario().getDiaDaSemana().equals(horario.getDiaDaSemana())
+    				&& s.getHorario().getHorarioAula().equals(horario.getHorarioAula())) {
     			
     			//Muda o dia da semana do hor�rio
     			horario.setDiaDaSemana(Dados.getDiaDaSemana(random.nextInt(Dados.getDiasDaSemana().length)));
     			
     			//Muda o hor�rio da aula do hor�rio
     			horario.setHorarioAula(Dados.getHorarioDeAula(random.nextInt(Dados.getHorariosDeAula().length)));
+    			
+    			mudouHorario = true;
+    			
+    			while(mudouHorario) {
+    				mudouHorario = false;
+    				for(Slot s1: slots) {
+    					if(s1.getHorario().getDiaDaSemana().equals(horario.getDiaDaSemana())
+    		    				&& s1.getHorario().getHorarioAula().equals(horario.getHorarioAula())) {
+			    			//Muda o dia da semana do hor�rio
+			    			horario.setDiaDaSemana(Dados.getDiaDaSemana(random.nextInt(Dados.getDiasDaSemana().length)));
+			    			
+			    			//Muda o hor�rio da aula do hor�rio
+			    			horario.setHorarioAula(Dados.getHorarioDeAula(random.nextInt(Dados.getHorariosDeAula().length)));
+			    			
+			    			mudouHorario = true;
+			    		
+    					}
+	    			}
+    			}
     		}
     	}
     }
@@ -262,13 +294,13 @@ public class Algoritmo {
      * Lista os slots de um determinado individuo
      */
     public static List<Slot> listarSlots(List<List<Slot>> individuo) {
-    	List<Slot> slots = new ArrayList<Slot>();
-    	for(List<Slot> genes: individuo) {
-    		for(Slot slot: genes) {
-    			slots.add(slot);
+    	List<Slot> aux = new ArrayList<Slot>();
+    	for(List<Slot> slots: individuo) {
+    		for(Slot slot: slots) {
+    			aux.add(slot);
     		}
     	}
-    	return slots;
+    	return aux;
     }
 
     public static double getTaxaDeCrossover() {
@@ -287,9 +319,11 @@ public class Algoritmo {
         Algoritmo.taxaDeMutacao = taxaDeMutacao;
     }
     
+    
     public static List<Disciplina> getDisciplinas() {
 		return disciplinas;
 	}
+	
 
 	public static void setDisciplinas(List<Disciplina> disciplinas) {
 		Algoritmo.disciplinas = disciplinas;
