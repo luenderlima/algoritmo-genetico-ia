@@ -9,15 +9,15 @@ import br.ufpb.ia.ag.algorithm.Algoritmo;
 
 public class Individuo implements Comparable<Individuo> {
 
-	//Os genes do indiv�duo � uma lista bidimensional, que representa uma grade hor�ria composta por slots 	
-	private List<List<Slot>> grade;
+	//Os genes do indivíduo é uma lista bidimensional, que representa uma grade horária composta por slots 	
+	private List<List<Slot>> gradeHoraria;
 	private int aptidao;   
 
     /**
-     * Gera um indiv�duo aleat�rio
+     * Gera um indivíduo aleatório
      */
     public Individuo(int numGenes) {  
-    	this.grade = new ArrayList<List<Slot>>();
+    	this.gradeHoraria = new ArrayList<List<Slot>>();
     	Random random = new Random();
     	List<Disciplina> disciplinasNaoAlocadas = new ArrayList<Disciplina>();
     	    	
@@ -28,7 +28,7 @@ public class Individuo implements Comparable<Individuo> {
     	
     	//Inicializa as listas que representam os dias da semana
     	for(int i = 0; i < Dados.getDiasDaSemana().length; i++) {
-    		this.grade.add(new ArrayList<Slot>());
+    		this.gradeHoraria.add(new ArrayList<Slot>());
     	} 
     	
     	//Aloca todas as disciplinas de modo aleatório na grade horária
@@ -36,7 +36,7 @@ public class Individuo implements Comparable<Individuo> {
     		Horario horario = geraHorario();
     		
 	        //Adiciona o slot contendo a disciplina e o respectivo horário em que será ministrada
-	        this.grade.get(Dados.getIndiceDiaDaSemana(horario.getDiaDaSemana())).add(
+	        this.gradeHoraria.get(Dados.getIndiceDiaDaSemana(horario.getDiaDaSemana())).add(
 	        								new Slot(disciplinasNaoAlocadas.remove(random.nextInt(disciplinasNaoAlocadas.size())), horario));
 	        
         }
@@ -46,11 +46,11 @@ public class Individuo implements Comparable<Individuo> {
     }
 
 	/**
-     *  Cria um indiv�duo com os genes definidos
+     *  Cria um indivíduo com os genes definidos
      */
     public Individuo(List<List<Slot>> genes) {   
     	Random random = new Random();
-        this.grade = genes;
+        this.gradeHoraria = genes;
     
         //Se for realizar a mutação, inverte a posição entre dois genes
         if (random.nextDouble() <= Algoritmo.getTaxaDeMutacao()) {
@@ -109,7 +109,7 @@ public class Individuo implements Comparable<Individuo> {
     	this.aptidao = 0;
     	boolean acertou;
     	
-    	for(List<Slot> slots: this.grade) {
+    	for(List<Slot> slots: this.gradeHoraria) {
     		for(Slot slot: slots) {
     			acertou = false;
     			
@@ -127,8 +127,6 @@ public class Individuo implements Comparable<Individuo> {
     			}
     			if(!acertou) {
     				slot.setApto(false);
-    				//this.aptidao -= 1;
-    				
     			}
     		}
     	}
@@ -136,7 +134,7 @@ public class Individuo implements Comparable<Individuo> {
     }
     
     /**
-     * Gera um novo hor�rio, em uma posi��o ainda n�o ocupada na grade hor�ria, para um slot
+     * Gera um novo horário, em uma posição ainda não ocupada na grade horária, para um slot
      */
     public Horario geraHorario() {
     	Random random = new Random();
@@ -159,11 +157,11 @@ public class Individuo implements Comparable<Individuo> {
     }
     
     /**
-     * @return verdadeiro, se j� existir um slot alocado naquele determinado hor�rio. Falso, caso contr�rio
+     * @return verdadeiro, se já existir um slot alocado naquele determinado horário. Falso, caso contrário
      */
     public boolean existsSlot(int indiceDia, String horarioDeAula) {
     	//varre os slots do dia indicado pela variável indiceDia
-	    for(Slot slot: this.grade.get(indiceDia)) {
+	    for(Slot slot: this.gradeHoraria.get(indiceDia)) {
 	    	//Verrifica se o horário da aula é igual ao que será alocado no slot
 	    	if(slot.getHorario().getHorarioAula().equals(horarioDeAula)) {
 	    		return true;
@@ -177,12 +175,11 @@ public class Individuo implements Comparable<Individuo> {
     }
     
     public List<List<Slot>> getGenes() {
-        return this.grade;
+        return this.gradeHoraria;
     }
 
     /**
      * A ordenação dos indivíduos será feita a partir do indivíduo que possui a maior aptidão para a menor 
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
 	public int compareTo(Individuo individuo) {

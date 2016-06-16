@@ -21,14 +21,14 @@ public class Algoritmo {
     public static Populacao novaGeracao(Populacao populacao, boolean elitismo) {
         Random random = new Random();
         //Nova popula��o do mesmo tamanho da antiga
-        Populacao novaPopulacao = new Populacao(); //parametro: populacao.getTamPopulacao()
+        Populacao novaPopulacao = new Populacao(); 
 
         //Se tiver elitismo, mantém o melhor indivíduo da geração atual
         if (elitismo) {
             novaPopulacao.adicionarIndividuo(populacao.getIndividuo(0));
         }
         
-        //Insere novos indivíduos na nova população, até atingir o tamanho máximo de indivíduos
+        //Insere novos indivíduos na nova população até atingir o tamanho máximo de indivíduos
         while (novaPopulacao.getTamPopulacao() < Dados.getTamanhoMaximoPopulacao()) {
         	
             //Seleciona os 2 pais por torneio
@@ -57,7 +57,7 @@ public class Algoritmo {
     
     public static Individuo[] selecaoTorneio(Populacao populacao) {
         Random random = new Random();
-        Populacao populacaoIntermediaria = new Populacao(); //Populacao populacaoIntermediaria = new Populacao(3);
+        Populacao populacaoIntermediaria = new Populacao();
         
         //Seleciona 3 indivíduos aleatoriamente na população
         populacaoIntermediaria.adicionarIndividuo(populacao.getIndividuo(random.nextInt(populacao.getTamPopulacao())));
@@ -69,7 +69,7 @@ public class Algoritmo {
 
         Individuo[] pais = new Individuo[2];
 
-        //Seleciona os 2 melhores desta popula��o intermedi�ria
+        //Seleciona os 2 melhores indivíduos desta população intermediária
         pais[0] = populacaoIntermediaria.getIndividuo(0);
         pais[1] = populacaoIntermediaria.getIndividuo(1);
 
@@ -77,13 +77,15 @@ public class Algoritmo {
     }
     
     /**
-     * Gera o crossover a partir de dois indiv�duos (pais)
-     * @return dois novos indiv�duos gerados a partir de combina��es dos genes dos seus pais
+     * Gera o crossover a partir de dois indivíduos (pais)
+     * @return dois novos indivíduos gerados a partir de combinações dos genes dos seus pais
      */
     public static Individuo[] crossover(Individuo individuo1, Individuo individuo2) {
-        Random random = new Random();
+        //Random random = new Random();
         int indiceDia;
         Slot slot;
+        
+        //Disciplinas auxiliares que conterão os slots dos filhos
         List<Slot> slotsFilho1 = new ArrayList<Slot>();
         List<Slot> slotsFilho2 = new ArrayList<Slot>();
                 
@@ -106,8 +108,8 @@ public class Algoritmo {
     	List<Slot> slotsPai2 = listarSlots(individuo2.getGenes());
         
         //Estabelece os pontos de corte 
-        int pontoCorte1 = 2; 					// random.nextInt((individuo1.getGenes().size()/2) -1) + 1
-        int pontoCorte2 = 3;					// random.nextInt((individuo1.getGenes().size()/2) -1) + individuo1.getGenes().size()/2
+        int pontoCorte1 = 2; 					
+        int pontoCorte2 = 3;				
         //int pontoCorte1 = random.nextInt(2)+2;
         //int pontoCorte2 = pontoCorte1+random.nextInt(2)+2;
                 
@@ -215,8 +217,8 @@ public class Algoritmo {
         	
         	slot = slotsPai2.get(i);
         	indiceDia = Dados.getIndiceDiaDaSemana(slot.getHorario().getDiaDaSemana());
-        	//Se o slot do pai ainda n�o existir no filho 2, ele ser� alocado 
-        	//Testa o slot para que n�o haja tarefas repetidas em uma mesma grade
+        	//Se o slot do pai ainda não existir no filho 2, ele será alocado 
+        	//Testa o slot para que não haja tarefas repetidas em uma mesma grade
         	if(validaAlocacao(slot.getDisciplina(), disciplinasNaoAlocadasFilho2)) {
         		avaliarHorario(slot.getHorario(), slotsFilho2);
             	genesFilho2.get(indiceDia).add(slot);
@@ -231,7 +233,7 @@ public class Algoritmo {
 
         }
         
-        //Cria o novo indiv�duo com os genes dos pais
+        //Cria o novo indivíduo com os genes dos pais
         filhos[0] = new Individuo(genesFilho1);
         filhos[1] = new Individuo(genesFilho2);
         return filhos;

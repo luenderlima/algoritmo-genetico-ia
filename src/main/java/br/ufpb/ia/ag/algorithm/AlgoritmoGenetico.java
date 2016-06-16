@@ -17,24 +17,13 @@ public class AlgoritmoGenetico {
 
 		Random random = new Random();
     	String[] nomesProfessores = {"Eduardo", "Yuska", "Marcus", "Yuri 2", "Hacks", "Yuri", "Luiz"};
-    								/*
-    								"Ayla", "RR", "Juliana Aragão", "Ana Liz", "Geraldo", "Jorge", "Renata",
-    								"Vanessa", "Gabriela", "Carlos Alberto", "Fabrício", "Eliane", "Juliana Saraiva", "Rafael", "Wagner", 
-    								"Scaico", "Angeluce", "Joelson", "Flávia", "Théofilo", "Osicleide"
-    								 */
     	
     	String[] nomesDisciplinas = {"PAS II", "GQS", "SD", "IA", "ASS", "DSC", "SAG"};
-    				/*
-    				"ADS", "LP", "IP", "ADM I", "ADM II", "PAS I", "IC", "ADM II", "FILOSOFIA", "�TICA", "SOCIOLOGIA", 
-    				"POO", "EMPREENDEDORISMO", "SD", "CÁLCULO", "ME", "AL", "PE", "RC", "GRC", "BD I", "BD II", "AED I", "AED II", "ES", "ESA",
-    				"ARQUITETURA 1", "ARQUITETURA II", "SO", "LÓGICA", "PARADIGMAS", "GPS", "GINF", "PESQUISA APLICADA", "IHC", "TCC", "ESTÁGIO", "LIBRAS", "INGLÊS",
-    				"MODELAGEM", "PSCOLOGIA", "ESTÁGIO 1 - LCC", "ESTÁGIO 2 - LCC", "ESTÁGIO 3 - LCC", "ESTÁGIO 4 - LCC", "DIDÁTICA", "LUSIVAL"}; 
-    				*/
     	    	
     	List<Disciplina> disciplinas = new ArrayList<Disciplina>();
     	
     	try {
-    		int quantHorariosDePreferenciaProfessor = 10;
+    		int quantHorariosDePreferenciaProfessor = 9;
     		boolean cadastrou = false;
     		Disciplina disciplina;
     		List<Professor> professores = new ArrayList<Professor>();
@@ -43,7 +32,7 @@ public class AlgoritmoGenetico {
     			Professor professor = new Professor();
 	        	professor.setNome(nome);
 	        	
-	        	//Cria e cadastra os hor�rios de prefer�ncia do professor
+	        	//Cria e cadastra os horários de preferência do professor
 	        	for(int i=0; i < quantHorariosDePreferenciaProfessor; i++) {
 	        		cadastrou = false;
 	        		
@@ -71,17 +60,9 @@ public class AlgoritmoGenetico {
     		
 			
 			//Cadastra disciplinas e aloca os professores
-    		//int j=0; 
     		for(int i=0; i < nomesDisciplinas.length; i++) {
-    			/*
-    			if(j==professores.size()-1){
-    				j=0;
-    			} else {
-    				j++;
-    			}
-    			*/
 		    	disciplina = new Disciplina(nomesDisciplinas[i]);
-		    	disciplina.setProfessor(professores.get(i)); //j
+		    	disciplina.setProfessor(professores.get(i)); 
 
     			disciplinas.add(disciplina);
     			
@@ -107,32 +88,31 @@ public class AlgoritmoGenetico {
     
     public static List<List<Slot>> executarAlgoritmoGenetico(List<Disciplina> disciplinas) {
     	
-    	//Seta os valores para a execu��o do algoritmo
+    	//Seta os valores para a execução do algoritmo
     	Algoritmo.setDisciplinas(disciplinas);
     	
     	//Define a taxa de crossover do algoritmo
         Algoritmo.setTaxaDeCrossover(Dados.getTaxaDeCrossover());
         
-        //Define a taxa de muta��o do algoritmo
+        //Define a taxa de mutação do algoritmo
         Algoritmo.setTaxaDeMutacao(Dados.getTaxaDeMutacao());
         
-        //Eltismo: Manuten��o do melhor indiv�duo nas pr�ximas gera��es
+        //Eltismo: Manutenção do melhor indivíduo na próxima geração
         boolean eltismo = true;
         
-        //Tamanho da popula��o que ser� criada
-        
+        //Tamanho da população que será criada
         int tamanhoPopulacao = Dados.getTamanhoMaximoPopulacao();
-        //N�mero m�ximo de gera��es do algoritmo
         
+        //Número máximo de gerações do algoritmo
         int numMaxGeracoes = Dados.getNumeroMaximoGeracoes();
         
-        //Define o n�mero de genes do indiv�duo baseado na quantidadde de disciplinas que devem ser alocadas
+        //Define o número de genes do indivíduo baseado na quantidadde de disciplinas que devem ser alocadas
         int numGenes = Algoritmo.getDisciplinas().size();
          
-        //Cria a primeira popula��o aleatoriamente
+        //Cria a primeira população aleatoriamente
         Populacao populacao = new Populacao(numGenes, tamanhoPopulacao);
         
-        // Avalia a primeira popula��o gerada, verificando se a solu��o procurada foi encontrada
+        // Avalia a primeira população gerada, verificando se a solução procurada foi encontrada
         boolean temSolucao = populacao.avaliarPopulacao(numGenes);   
         int geracao = 0;
                 
@@ -140,36 +120,25 @@ public class AlgoritmoGenetico {
         
         int aptidaoIndividuoPopulacaoAnterior = 0;
         
-        //Loop at� a solu��o ser encontrada ou at� atingir o n�mero m�ximo de gera��es
+        //Enquanto a solução não for encontrada e a quantidade de gerações não atingir o número máximo de gerações
         while (!temSolucao && geracao < numMaxGeracoes) {
             geracao++;
             
-            //Cria uma nova popula��o
+            //Cria uma nova população
             populacao = Algoritmo.novaGeracao(populacao, eltismo);
-                        
-            
-            
-            
+
             int aux = populacao.getMelhorIndividuo().getAptidao();
             
             if(aux > aptidaoIndividuoPopulacaoAnterior) {
-            	//Imprime o melhor indiv�duo da popula��o
+            	//Imprime o melhor indivíduo da população
                 System.out.println("Geraçãoo " + geracao + " | Aptidão: " + populacao.getMelhorIndividuo().getAptidao());
                 
-            	//Avalia a nova gera��o criada, verificando se a soluu��o procurada foi encontrada 
-                System.out.println("aptidão melhor indivíduo: "+populacao.getMelhorIndividuo().getAptidao()
-                					+", APTIDÃO MÁXIMA: "+numGenes);
             	aptidaoIndividuoPopulacaoAnterior = aux;
             }
             
-            
-            
+            //Avalia a nova geração criada, verificando se a solução foi encontrada 
             temSolucao = populacao.getMelhorIndividuo().getAptidao() == numGenes; 
-            		//populacao.avaliarPopulacao(Algoritmo.getAptidaoMaxima());
             
-            if(temSolucao) {
-            	System.err.println("TEM SOLUÇÃO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            }
         }
         
         if(temSolucao) {
@@ -178,7 +147,7 @@ public class AlgoritmoGenetico {
         	System.out.println("\n\nRESULTADO OBTIDO ATRAVÉS DO NÚMERO MÁXIMO DE GERAÇÕES!");
         }
         
-        System.out.println("aptidão do resultado: "+populacao.getMelhorIndividuo().getAptidao());
+        
         return populacao.getMelhorIndividuo().getGenes();
 
     }
