@@ -160,11 +160,15 @@ public class Individuo implements Comparable<Individuo> {
         return this.grade;
     }
 
+    /**
+     * A ordenação dos indivíduos será feita a partir do indivíduo que possui a maior aptidão para a menor 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
     @Override
 	public int compareTo(Individuo individuo) {
-		if(this.aptidao > individuo.getAptidao()) {
+		if(this.aptidao < individuo.getAptidao()) { 
 			return 1;
-		} else if(this.aptidao < individuo.getAptidao()) {
+		} else if(this.aptidao > individuo.getAptidao()) {
 			return -1;
 		}
 		return 0;

@@ -113,5 +113,9 @@ public class Populacao {
     public Individuo getIndividuo(int pos) {
         return individuos.get(pos);
     }
+
+	public List<Individuo> getIndividuos() {
+		return individuos;
+	}
     
 }

@@ -2,12 +2,12 @@ package br.ufpb.ia.ag.algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Random;
 
 import br.ufpb.ia.ag.entity.Dados;
 import br.ufpb.ia.ag.entity.Disciplina;
 import br.ufpb.ia.ag.entity.Horario;
+import br.ufpb.ia.ag.entity.Individuo;
 import br.ufpb.ia.ag.entity.Populacao;
 import br.ufpb.ia.ag.entity.Professor;
 import br.ufpb.ia.ag.entity.Slot;
@@ -133,7 +133,7 @@ public class AlgoritmoGenetico {
         System.out.println("Iniciando... Aptid�o da solu��o: "+numGenes);
         
         //Loop at� a solu��o ser encontrada ou at� atingir o n�mero m�ximo de gera��es
-        while (!temSolucao || geracao < numMaxGeracoes) {
+        while (!temSolucao && geracao < numMaxGeracoes) {
             geracao++;
             
             //Cria uma nova popula��o
@@ -144,12 +144,20 @@ public class AlgoritmoGenetico {
             
             //Avalia a nova gera��o criada, verificando se a soluu��o procurada foi encontrada 
             temSolucao = populacao.avaliarPopulacao(Algoritmo.getAptidaoMaxima());
+            if(temSolucao);
+            	System.err.println("TEM SOLUÇÃO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
         
         if(temSolucao) {
         	System.out.println("\n\nRESULTADO OBTIDO ATRAVÉS DA SOLUÇÃO!");
         } if(geracao == numMaxGeracoes) {
         	System.out.println("\n\nRESULTADO OBTIDO ATRAVÉS DO NÚMERO MÁXIMO DE GERAÇÕES!");
+        }
+        
+        int cont = 0;
+        for(Individuo i: populacao.getIndividuos()) {
+        	System.out.println("APTIDÃO DO INDIVÍDUO "+cont+": "+i.getAptidao());
+        	cont++;
         }
         
         System.out.println("aptidão do resultado: "+populacao.getMelhorIndividuo().getAptidao());
