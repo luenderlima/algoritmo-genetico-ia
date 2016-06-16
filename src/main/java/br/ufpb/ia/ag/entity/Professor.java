@@ -1,5 +1,6 @@
 package br.ufpb.ia.ag.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.ufpb.ia.ag.exception.HorarioExistenteException;
@@ -13,12 +14,16 @@ public class Professor {
 	private String email;
 	private List<Horario> horariosPreferidos;
 	
-	public Professor(String matricula, String nome, String senha, String email, List<Horario> horariosPreferidos) {
+	public Professor(String matricula, String nome, String senha, String email) {
 		this.matricula = matricula;
 		this.nome = nome;
 		this.senha = senha;
 		this.email = email;
-		this.horariosPreferidos = horariosPreferidos;
+		this.horariosPreferidos = new ArrayList<Horario>();
+	}
+	
+	public Professor() {
+		this.horariosPreferidos = new ArrayList<Horario>();
 	}
 	
 	public String getMatricula() {
@@ -63,11 +68,8 @@ public class Professor {
 
 	public void cadastrarHorarioPreferido(Horario horario) throws HorarioExistenteException {
 		if(existsHorario(horario)) {
-			
-			throw new HorarioExistenteException("O horário de preferência já existe.");
-			
+			throw new HorarioExistenteException("O horÃ¡rio de preferÃªncia jÃ¡ existe.");
 		} 
-		
 		this.horariosPreferidos.add(horario);
 	}
 
@@ -80,14 +82,12 @@ public class Professor {
 			}
 		}
 		if(!removeu) {
-			throw new HorarioInexistenteException("O horário de preferência não existe.");
+			throw new HorarioInexistenteException("O horÃ¡rio de preferÃªncia nÃ£o existe.");
 		}
 		
 	}
 	
 	public boolean existsHorario(Horario horario) {
-		// COMO VAI TRATAR A QUESTÃO DOS HORÁRIOS JUNTOS AOS DIAS AQUI? O PROFESSOR POSSUI UMA LISTA DE HORÁRIOS PREFERIDOS,
-				// MAS NÃO TEM A INFORMAÇÃO DOS DIAS EM QUE ESSES HORÁRIOS CORRESPONDEM
 		// Atualizado com o novo design de um objeto Horario
 		for(Horario h: horariosPreferidos) {
 			if(h.getDiaDaSemana().equals(horario.getDiaDaSemana()) && h.getHorarioAula().equals(horario.getHorarioAula())) {

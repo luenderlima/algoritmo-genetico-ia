@@ -3,137 +3,156 @@ package br.ufpb.ia.ag.algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
-
 import java.util.Random;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import br.ufpb.ag.es.entity.Gerenciador;
-import br.ufpb.ag.es.entity.Horario;
-import br.ufpb.ag.es.entity.Disciplina;
-import br.ufpb.ag.es.entity.Usuario;
 import br.ufpb.ia.ag.entity.Dados;
+import br.ufpb.ia.ag.entity.Disciplina;
+import br.ufpb.ia.ag.entity.Horario;
 import br.ufpb.ia.ag.entity.Populacao;
+import br.ufpb.ia.ag.entity.Professor;
 import br.ufpb.ia.ag.entity.Slot;
 
 public class AlgoritmoGenetico {
 	
 	public static void main(String[] args) {
+
 		Random random = new Random();
-    	String[] nomesParticipantes = {"Odravison", "Paulo", "SÈrgio J˙nior", "Ricardo", "Luender", "J„o"};
-    	String[] nomesTarefas = {"Varrer casa", "Lavar louÁa", "Lavar banheiro", "Lavar panos de prato",
-    				"Limpar mÛveis", "Comprar p„o", "Lavar panos de ch„o"}; //, "aaa", "bbb", "ccc", "ddd", "eee", "ffff", "ggg"
+    	String[] nomesProfessores = {"Eduardo", "Yuska", "Marcus", "Yuri 2", "Hacks", "Yuri", "Luiz"};
+    								/*
+    								"Ayla", "RR", "Juliana Arag√£o", "Ana Liz", "Geraldo", "Jorge", "Renata",
+    								"Vanessa", "Gabriela", "Carlos Alberto", "Fabr√≠cio", "Eliane", "Juliana Saraiva", "Rafael", "Wagner", 
+    								"Scaico", "Angeluce", "Joelson", "Fl√°via", "Th√©ofilo", "Osicleide"
+    								 */
+    	
+    	String[] nomesDisciplinas = {"PAS II", "GQS", "SD", "IA", "ASS", "DSC", "SAG"};
+    				/*
+    				"ADS", "LP", "IP", "ADM I", "ADM II", "PAS I", "IC", "ADM II", "FILOSOFIA", "ÔøΩTICA", "SOCIOLOGIA", 
+    				"POO", "EMPREENDEDORISMO", "SD", "C√ÅLCULO", "ME", "AL", "PE", "RC", "GRC", "BD I", "BD II", "AED I", "AED II", "ES", "ESA",
+    				"ARQUITETURA 1", "ARQUITETURA II", "SO", "L√ìGICA", "PARADIGMAS", "GPS", "GINF", "PESQUISA APLICADA", "IHC", "TCC", "EST√ÅGIO", "LIBRAS", "INGL√äS",
+    				"MODELAGEM", "PSCOLOGIA", "EST√ÅGIO 1 - LCC", "EST√ÅGIO 2 - LCC", "EST√ÅGIO 3 - LCC", "EST√ÅGIO 4 - LCC", "DID√ÅTICA", "LUSIVAL"}; 
+    				*/
+    	    	
+    	List<Disciplina> disciplinas = new ArrayList<Disciplina>();
     	
     	try {
-    		Integer horaInicio;
-    		Integer horaFim;
-    		String dia;
-    		Disciplina tarefa;
-    		ArrayList<Usuario> participantes = new ArrayList<Usuario>();
+    		int quantHorariosDePreferenciaProfessor = 8;
+    		boolean cadastrou = false;
+    		Disciplina disciplina;
+    		List<Professor> professores = new ArrayList<Professor>();
     		
-    		Usuario participante = new Usuario();
-        	participante.setNome("Luender");
-        	Horario h1;
-    		
-    		//inicializa os outros usu·rios do grupo
-    		for(String nome: nomesParticipantes) {
-    			participante = new Usuario();
-	        	participante.setNome(nome);
-	        	for(int i=0; i<8; i++) {
-	        		dia = Dados.getDiaDaSemana(random.nextInt(7));
-	        		horaInicio = random.nextInt(Dados.getHorarioMaximo());
-	        		horaFim = horaInicio+1;
+    		for(String nome: nomesProfessores) {
+    			Professor professor = new Professor();
+	        	professor.setNome(nome);
+	        	
+	        	//Cria e cadastra os horÔøΩrios de preferÔøΩncia do professor
+	        	for(int i=0; i < quantHorariosDePreferenciaProfessor; i++) {
+	        		cadastrou = false;
 	        		
-	        		h1 = new Horario(horaInicio.toString(), horaFim.toString(), dia);
+	        		while(!cadastrou) {
+		        		try {
+			        		String dia = Dados.getDiaDaSemana(random.nextInt(Dados.getDiasDaSemana().length));
+			        		String horarioAula = Dados.getHorarioDeAula(random.nextInt(Dados.getHorariosDeAula().length));
+			        		
+			        		Horario horario = new Horario(horarioAula, dia);
+			        		
+		        			professor.cadastrarHorarioPreferido(horario);
+		        			cadastrou = true;
+		        			System.out.println("Cadastrou o hor√°rio - dia da semana: "+horario.getDiaDaSemana()+" / hor√°rio aula: "+horario.getHorarioAula()
+		        								+" para o professor "+ professor.getNome().toUpperCase());
+		        		} catch(Exception e) {
+		        			cadastrou = false;
+		        		}
+	        		}
 	        		
-		        	participante.cadastrarHorarioDisponivel(h1);
-		        	
-		        	System.out.println("Cadastrou o hor·rio disponÌvel de "+nome+": dia: "+dia+", hora Inicio: "+horaInicio+", hora Fim: "+horaFim);
+	        		
+		        			        			        	
 	        	}
-	        	participantes.add(participante);
+	        	professores.add(professor);
     		}
     		
-    		//Cadastra a forÁa-tarefa no gerenciador
-    		Gerenciador.getInstance().cadastrarUsuario(participante);
-			Gerenciador.getInstance().cadastrarForcaTarefa("Zorra do lulu", participante.getId(), "0", "23");
 			
-			String idForcaTarefa = Gerenciador.getInstance().getForcasTarefa().get(0).getId();
-			//Cadastra tarefas e aloca seus encarregados
-    		int j=0;
-    		for(int i=0; i < nomesTarefas.length; i++) {
-    			if(j==4){
+			//Cadastra disciplinas e aloca os professores
+    		int j=0; 
+    		for(int i=0; i < nomesDisciplinas.length; i++) {
+    			
+    			if(j==professores.size()-1){
     				j=0;
     			} else {
-    				j++;;
+    				j++;
     			}
-    			tarefa = new Disciplina(nomesTarefas[i]);
-    			tarefa.setEncarregado(participantes.get(j));
-    			tarefa.setFrequencia(2);
-    			Gerenciador.getInstance().cadastrarTarefa(idForcaTarefa, tarefa);
-    		
-    			System.out.println("Participante "+tarefa.getEncarregado().getNome()+" ser· o encarregado da tarefa "+tarefa.getNome());
-    		}
-    		
-    		JSONObject object = new JSONObject();
-    	    try {
-    	        object.put("tarefas", Gerenciador.getInstance().getForcaTarefa(idForcaTarefa).getTarefas());
-    	        object.append("lista tarefas", Gerenciador.getInstance().getForcaTarefa(idForcaTarefa).getTarefas());
-    	        //System.out.println(object.toString());
-    	        
-    	        executarAlgoritmoGenetico(Gerenciador.getInstance().getForcaTarefa(idForcaTarefa).getTarefas());
 
-    	    } catch (JSONException e) {
-    	        e.printStackTrace();
-    	    }
+		    	disciplina = new Disciplina(nomesDisciplinas[i]);
+		    	disciplina.setProfessor(professores.get(j));
+
+    			disciplinas.add(disciplina);
+    			
+    			System.out.println("Professor: "+disciplina.getProfessor().getNome()+" ministrar√° a disciplina: "+disciplina.getNome());
+    		}
+    			    	        
+    		int cont = 0;
+    		for(List<Slot> slots: executarAlgoritmoGenetico(disciplinas)) {
+    			for(Slot slot: slots) {
+    				System.out.println("Slot "+cont+" - Hor√°rio da aula: " + slot.getHorario().getDiaDaSemana() + " - " + slot.getHorario().getHorarioAula()+
+    									"\nDisciplina: "+slot.getDisciplina().getNome()+", professor: "+slot.getDisciplina().getProfessor().getNome()+"\n\n");
+    				
+    				cont++;
+    			}
+    			
+    		}
+	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
     
-    public static List<List<Slot>> executarAlgoritmoGenetico(List<Disciplina> tarefas) {
-
-    	//Seta os valores para a execuÁ„o do algoritmo
-    	Algoritmo.setDisciplinas(tarefas);
+    public static List<List<Slot>> executarAlgoritmoGenetico(List<Disciplina> disciplinas) {
+    	
+    	//Seta os valores para a execuÔøΩÔøΩo do algoritmo
+    	Algoritmo.setDisciplinas(disciplinas);
     	//Define a taxa de crossover do algoritmo
         Algoritmo.setTaxaDeCrossover(Dados.getTaxaDeCrossover());
-        //Define a taxa de mutaÁ„o do algoritmo
+        //Define a taxa de mutaÔøΩÔøΩo do algoritmo
         Algoritmo.setTaxaDeMutacao(Dados.getTaxaDeMutacao());
-        //Eltismo: ManutenÁ„o do melhor indivÌduo nas prÛximas geraÁıes
+        //Eltismo: ManutenÔøΩÔøΩo do melhor indivÔøΩduo nas prÔøΩximas geraÔøΩÔøΩes
         boolean eltismo = true;
-        //Tamanho da populaÁ„o que ser· criada
+        //Tamanho da populaÔøΩÔøΩo que serÔøΩ criada
         int tamanhoPopulacao = Dados.getTamanhoMaximoPopulacao();
-        //N˙mero m·ximo de geraÁıes do algoritmo
+        //NÔøΩmero mÔøΩximo de geraÔøΩÔøΩes do algoritmo
         int numMaxGeracoes = Dados.getNumeroMaximoGeracoes();
-        //Define o n˙mero de genes do indivÌduo baseado na quantidadde de tarefas que devem ser alocadas
-        int numGenes = Algoritmo.getQuantidadeDisciplinas();
-        
-        //Cria a primeira populaÁ„o aleatoriamente
+        //Define o nÔøΩmero de genes do indivÔøΩduo baseado na quantidadde de disciplinas que devem ser alocadas
+        int numGenes = Algoritmo.getDisciplinas().size();
+         
+        //Cria a primeira populaÔøΩÔøΩo aleatoriamente
         Populacao populacao = new Populacao(numGenes, tamanhoPopulacao);
-
-        // Avalia a primeira populaÁ„o gerada, verificando se a soluÁ„o procurada foi encontrada
-        boolean temSolucao = populacao.avaliarPopulacao(Algoritmo.getAptidaoMaxima());   
-        int geracao = 0;
-
-        System.out.println("Iniciando... Aptid„o da soluÁ„o: "+numGenes);
         
-        //Loop atÈ a soluÁ„o ser encontrada ou atÈ atingir o n˙mero m·ximo de geraÁıes
-        while (!temSolucao && geracao < numMaxGeracoes) {
+        // Avalia a primeira populaÔøΩÔøΩo gerada, verificando se a soluÔøΩÔøΩo procurada foi encontrada
+        boolean temSolucao = populacao.avaliarPopulacao(numGenes);   
+        int geracao = 0;
+                
+        System.out.println("Iniciando... AptidÔøΩo da soluÔøΩÔøΩo: "+numGenes);
+        
+        //Loop atÔøΩ a soluÔøΩÔøΩo ser encontrada ou atÔøΩ atingir o nÔøΩmero mÔøΩximo de geraÔøΩÔøΩes
+        while (!temSolucao || geracao < numMaxGeracoes) {
             geracao++;
-            //Cria uma nova populaÁ„o
+            
+            //Cria uma nova populaÔøΩÔøΩo
             populacao = Algoritmo.novaGeracao(populacao, eltismo);
                         
-            //Imprime o melhor indivÌduo da populaÁ„o
-            System.out.println("GeraÁ„o " + geracao + " | Aptid„o: " + populacao.getIndividuo(0).getAptidao());
-
-            //Avalia a nova geraÁ„o criada, verificando se a soluuÁ„o procurada foi encontrada 
+            //Imprime o melhor indivÔøΩduo da populaÔøΩÔøΩo
+            System.out.println("Gera√ß√£oo " + geracao + " | Aptid√£o: " + populacao.getIndividuo(0).getAptidao());
+            
+            //Avalia a nova geraÔøΩÔøΩo criada, verificando se a soluuÔøΩÔøΩo procurada foi encontrada 
             temSolucao = populacao.avaliarPopulacao(Algoritmo.getAptidaoMaxima());
         }
         
+        if(temSolucao) {
+        	System.out.println("\n\nRESULTADO OBTIDO ATRAV√âS DA SOLU√á√ÉO!");
+        } if(geracao == numMaxGeracoes) {
+        	System.out.println("\n\nRESULTADO OBTIDO ATRAV√âS DO N√öMERO M√ÅXIMO DE GERA√á√ïES!");
+        }
+        
+        System.out.println("aptid√£o do resultado: "+populacao.getMelhorIndividuo().getAptidao());
         return populacao.getMelhorIndividuo().getGenes();
 
     }

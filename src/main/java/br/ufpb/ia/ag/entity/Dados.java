@@ -2,18 +2,13 @@ package br.ufpb.ia.ag.entity;
 
 public class Dados {
 	
-	private static final int QUANTIDADE_DIAS = 5;
 	private final static double TAXA_DE_MUTACAO  = 0.03;
 	private final static double TAXA_DE_CROSSOVER = 0.6;
 	private final static int TAMANHO_MAXIMO_POPULACAO = 100;
 	private final static int NUMERO_MAXIMO_GERACOES = 5000;
 	
 	private static final String[] HORARIOS_DE_AULA = {"M2", "M3", "M4", "M5", "T1", "T2", "T3", "T4"};
-	private static final String[] DIAS_DA_SEMANA = {"Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira"};
-
-    public static int getQuantidadeDias() {
-		return QUANTIDADE_DIAS;
-	}
+	private static final String[] DIAS_DA_SEMANA = {"Segunda-Feira", "TerÃ§a-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira"};
     
 	public static double getTaxaDeMutacao() {
 		return TAXA_DE_MUTACAO;
@@ -39,10 +34,6 @@ public class Dados {
 		return HORARIOS_DE_AULA[indiceHorario];
 	}
 	
-	public static int getHorarioMaximo() {
-		return HORARIOS_DE_AULA.length;
-	}
-	
 	public static int getIndiceDiaDaSemana(String diaDaSemana) {
 		for(int i = 0; i < DIAS_DA_SEMANA.length; i++) {
 			if(DIAS_DA_SEMANA[i].toUpperCase().equals(diaDaSemana.toUpperCase())) {
@@ -50,6 +41,14 @@ public class Dados {
 			}
 		}
 		return -1;
+	}
+
+	public static String[] getHorariosDeAula() {
+		return HORARIOS_DE_AULA;
+	}
+
+	public static String[] getDiasDaSemana() {
+		return DIAS_DA_SEMANA;
 	}
 	
 }

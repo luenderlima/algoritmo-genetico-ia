@@ -7,11 +7,11 @@ import java.util.Random;
 
 import br.ufpb.ia.ag.algorithm.Algoritmo;
 
-public class Individuo {
+public class Individuo implements Comparable<Individuo> {
 
 	//Os genes do indivï¿½duo ï¿½ uma lista bidimensional, que representa uma grade horï¿½ria composta por slots 	
 	private List<List<Slot>> grade;
-	private int aptidao = 0;   
+	private int aptidao;   
 
     /**
      * Gera um indivï¿½duo aleatï¿½rio
@@ -19,21 +19,26 @@ public class Individuo {
     public Individuo(int numGenes) {  
     	this.grade = new ArrayList<List<Slot>>();
     	Random random = new Random();
-    	List<Disciplina> disciplinasNaoAlocadas = Algoritmo.getDisciplinas();
-    	Horario horario;
+    	List<Disciplina> disciplinasNaoAlocadas = new ArrayList<Disciplina>();
+    	    	
+    	//Adiciona as disciplinas que deverÃ£o ser alocadas na lista auxiliar
+    	for(Disciplina disciplina: Algoritmo.getDisciplinas()) {
+    		disciplinasNaoAlocadas.add(disciplina);
+    	}
     	
     	//Inicializa as listas que representam os dias da semana
-    	for(int i = 0; i < Dados.getQuantidadeDias(); i++) {
+    	for(int i = 0; i < Dados.getDiasDaSemana().length; i++) {
     		this.grade.add(new ArrayList<Slot>());
     	} 
     	
-    	//Aloca todas as tarefas de modo aleatório na grade horária
+    	//Aloca todas as disciplinas de modo aleatÃ³rio na grade horÃ¡ria
     	for (int i = 0; i < Algoritmo.getDisciplinas().size(); i++) {
-    		horario = geraHorario();
-	        
-	        //Adiciona o slot contendo a tarefa e seu respectivo horário de realização
+    		Horario horario = geraHorario();
+    		
+	        //Adiciona o slot contendo a disciplina e o respectivo horÃ¡rio em que serÃ¡ ministrada
 	        this.grade.get(Dados.getIndiceDiaDaSemana(horario.getDiaDaSemana())).add(
 	        								new Slot(disciplinasNaoAlocadas.remove(random.nextInt(disciplinasNaoAlocadas.size())), horario));
+	        
         }
     	
         geraAptidao(); 
@@ -47,18 +52,18 @@ public class Individuo {
     	Random random = new Random();
         this.grade = genes;
     
-        //Se for mutar, inverte a posição entre dois genes
+        //Se for mutar, inverte a posiï¿½ï¿½o entre dois genes
         if (random.nextDouble() <= Algoritmo.getTaxaDeMutacao()) {
         	
-        	int indiceDia1 = random.nextInt(Dados.getQuantidadeDias());
-        	//Loop enquanto o dia sorteado não possuir nenhum slot alocado
+        	int indiceDia1 = random.nextInt(Dados.getDiasDaSemana().length);
+        	//Loop enquanto o dia sorteado nï¿½o possuir nenhum slot alocado
         	while(genes.get(indiceDia1).size() == 0){
-        		indiceDia1 = random.nextInt(Dados.getQuantidadeDias());
+        		indiceDia1 = random.nextInt(Dados.getDiasDaSemana().length);
         	}
-        	int indiceDia2 = random.nextInt(Dados.getQuantidadeDias());
-        	//Loop enquanto o dia sorteado não possuir nenhum slot alocado
+        	int indiceDia2 = random.nextInt(Dados.getDiasDaSemana().length);
+        	//Loop enquanto o dia sorteado nï¿½o possuir nenhum slot alocado
         	while(genes.get(indiceDia2).size() == 0){
-        		indiceDia2 = random.nextInt(Dados.getQuantidadeDias());
+        		indiceDia2 = random.nextInt(Dados.getDiasDaSemana().length);
         	}
         	
         	int posicaoAleatoria1 = random.nextInt(genes.get(indiceDia1).size());
@@ -67,7 +72,7 @@ public class Individuo {
         	Slot slot1 = genes.get(indiceDia1).get(posicaoAleatoria1);
         	Slot slot2 = genes.get(indiceDia2).get(posicaoAleatoria2);
         	
-        	//Substitui a posição de dois genes aleatórios
+        	//Substitui a posiï¿½ï¿½o de dois genes aleatï¿½rios
         	genes.get(indiceDia1).set(posicaoAleatoria1, slot2);
         	genes.get(indiceDia2).set(posicaoAleatoria2, slot1);
         	
@@ -77,30 +82,33 @@ public class Individuo {
     }
 
     /**
-     * Calcula o valor de aptidão do indivíduo
+     * Calcula o valor de aptidï¿½o do indivï¿½duo
      */
     private void geraAptidao() {
     	this.aptidao = 0;
     	boolean acertou;
     	
-    	for(int i = 0; i < this.grade.size(); i++) {
-    		for(Slot slot: this.grade.get(i)) {
+    	for(List<Slot> slots: this.grade) {
+    		for(Slot slot: slots) {
     			acertou = false;
-    			//Varre a lista de horários preferidos do professor
+    			
+    			//Varre a lista de horï¿½rios preferidos do professor
     			for(Horario horarioDisponivel: slot.getDisciplina().getProfessor().getHorariosPreferidos()) {
-    				// Verifica se o horário do slot é um horário de preferência do professor
+    				
+    				// Verifica se o horï¿½rio do slot ï¿½ um horï¿½rio de preferï¿½ncia do professor
     				if(horarioDisponivel.getDiaDaSemana().equals(slot.getHorario().getDiaDaSemana())
     					&&	horarioDisponivel.getHorarioAula().equals(slot.getHorario().getHorarioAula())) {
-    					
+    					    					
     					slot.setApto(true);
     					acertou = true;
     					this.aptidao += 1;
-    					
-    				} //else 
+    					    					
+    				} 
     			}
     			if(!acertou) {
     				slot.setApto(false);
-    				this.aptidao -= 1;
+    				//this.aptidao -= 1;
+    				
     			}
     		}
     	}
@@ -108,37 +116,40 @@ public class Individuo {
     }
     
     /**
-     * @return verdadeiro, se já existir um slot alocado naquele determinado horário. Falso, caso contrário
-     */
-    public boolean existsSlot(int indiceDia, String horario) {
-	    for(Slot slot: this.grade.get(indiceDia)) {
-	    	if(slot.getHorario().equals(horario)) {
-	    		return true;
-	    	}
-	    }
-    	return false;
-    }
-    
-    /**
-     * Gera um novo horário, em uma posição ainda não ocupada na grade horária, para um slot
+     * Gera um novo horï¿½rio, em uma posiï¿½ï¿½o ainda nï¿½o ocupada na grade horï¿½ria, para um slot
      */
     public Horario geraHorario() {
     	Random random = new Random();
     	
     	Integer indiceDia;
     	Integer indiceHorario;
-    	String horario;
+    	String horarioDeAula;
     	
     	do {
-			indiceDia = random.nextInt(Dados.getQuantidadeDias());
-			indiceHorario = random.nextInt(Dados.getHorarioMaximo());
-
-			horario = Dados.getHorarioDeAula(indiceHorario);
+			indiceDia = random.nextInt(Dados.getDiasDaSemana().length);
 			
-		//Verifica se o horário gerado já existe 
-    	} while (existsSlot(indiceDia, horario));
+			indiceHorario = random.nextInt(Dados.getHorariosDeAula().length);
+
+			horarioDeAula = Dados.getHorarioDeAula(indiceHorario);
+			
+			//Verifica se o horÃ¡rio gerado jÃ¡ existe 
+    	} while (existsSlot(indiceDia, horarioDeAula));
     	
-    	return new Horario(horario, Dados.getDiaDaSemana(indiceDia));
+    	return new Horario(horarioDeAula, Dados.getDiaDaSemana(indiceDia));
+    }
+    
+    /**
+     * @return verdadeiro, se jï¿½ existir um slot alocado naquele determinado horï¿½rio. Falso, caso contrï¿½rio
+     */
+    public boolean existsSlot(int indiceDia, String horarioDeAula) {
+    	//varre os slots do dia indicado pela variÃ¡vel indiceDia
+	    for(Slot slot: this.grade.get(indiceDia)) {
+	    	//Verrifica se o horÃ¡rio da aula Ã© igual ao que serÃ¡ alocado no slot
+	    	if(slot.getHorario().getHorarioAula().equals(horarioDeAula)) {
+	    		return true;
+	    	}
+	    }
+    	return false;
     }
     
     public int getAptidao() {
@@ -148,5 +159,15 @@ public class Individuo {
     public List<List<Slot>> getGenes() {
         return this.grade;
     }
+
+    @Override
+	public int compareTo(Individuo individuo) {
+		if(this.aptidao > individuo.getAptidao()) {
+			return 1;
+		} else if(this.aptidao < individuo.getAptidao()) {
+			return -1;
+		}
+		return 0;
+	}
     
 }

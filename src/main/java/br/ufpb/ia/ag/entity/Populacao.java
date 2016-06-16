@@ -1,64 +1,83 @@
 package br.ufpb.ia.ag.entity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import br.ufpb.ia.ag.algorithm.Algoritmo;
+
 
 public class Populacao {
 
-    private Individuo[] individuos;
+    private List<Individuo> individuos;
     private int tamanhoPopulacao;
 
-    //Cria uma população com indivíduos aleatórios
-    public Populacao(int numGenes, int tamanhoPopulacao) { // tirar o numGenes
+    //Cria uma populaï¿½ï¿½o com indivï¿½duos aleatï¿½rios
+    public Populacao(int numGenes, int tamanhoPopulacao) { 
         this.tamanhoPopulacao = tamanhoPopulacao;
-        individuos = new Individuo[tamanhoPopulacao];
-        for (int i = 0; i < individuos.length; i++) {
-            individuos[i] = new Individuo(numGenes);
+        individuos = new ArrayList<Individuo>();
+        for (int i = 0; i < tamanhoPopulacao; i++) {
+            individuos.add(new Individuo(numGenes));
         }
     }
-
-    //Cria uma população com indivíduos sem valor, que serão compostos posteriormente
+    /*
+    //Cria uma populaï¿½ï¿½o com indivï¿½duos sem valor, que serï¿½o compostos posteriormente
     public Populacao(int tamanhoPopulacao) {
         this.tamanhoPopulacao = tamanhoPopulacao;
-        individuos = new Individuo[tamanhoPopulacao];
-        for (int i = 0; i < individuos.length; i++) {
-            individuos[i] = null;
+        individuos = new ArrayList<Individuo>();
+        for (int i = 0; i < tamanhoPopulacao; i++) {
+            individuos.add(null); //new Individuo(Algoritmo.getDisciplinas().size())
         }
     }
+    */
     
-    //Coloca um indivíduo em uma certa posição da população
+  //Cria uma populaï¿½ï¿½o com indivï¿½duos sem valor, que serï¿½o compostos posteriormente
+    public Populacao() {
+        this.tamanhoPopulacao = 0;
+        individuos = new ArrayList<Individuo>();
+    }
+    
+    //Coloca um indivï¿½duo em uma certa posiï¿½ï¿½o da populaï¿½ï¿½o
     public void setIndividuo(Individuo individuo, int posicao) {
-        individuos[posicao] = individuo;
+        individuos.add(posicao, individuo);
     }
 
-    //Adiciona um indivíduo na próxima posição disponível da população
+    //Adiciona um indivï¿½duo na prï¿½xima posiï¿½ï¿½o disponï¿½vel da populaï¿½ï¿½o
     public void adicionarIndividuo(Individuo individuo) {
-        for (int i = 0; i < individuos.length; i++) {
-            if (individuos[i] == null) {
-                individuos[i] = individuo;
+    	/*
+        for (int i = 0; i < individuos.size(); i++) {
+            if (individuos.get(i) == null) {
+                individuos.add(i, individuo);
                 return;
             }
         }
+        */
+    	individuos.add(individuo);
     }
 
-    /** ordena a população pelo valor de aptidão de cada indivíduo, do maior valor para o menor, assim se eu quiser obter o melhor indivíduo desta população, 
-     * acesso a população 0 do array de indivíduos 
+    /** ordena a populaï¿½ï¿½o pelo valor de aptidï¿½o de cada indivï¿½duo, do maior valor para o menor, assim se eu quiser obter o melhor indivï¿½duo desta populaï¿½ï¿½o, 
+     * acesso a populaï¿½ï¿½o 0 do array de indivï¿½duos 
      */
     public void ordenarPopulacao() {
+    	/*
         boolean trocou = true;
         while (trocou) {
             trocou = false;
             for (int i = 0; i < individuos.length - 1; i++) {
                 if (individuos[i].getAptidao() < individuos[i + 1].getAptidao()) {
-                    Individuo temp = individuos[i];
+                    Individuo aux = individuos[i];
                     individuos[i] = individuos[i + 1];
-                    individuos[i + 1] = temp;
+                    individuos[i + 1] = aux;
                     trocou = true;
                 }
             }
         }
+        */
+    	Collections.sort(individuos);
     }
     
     /**
-     * verifica se algum indivíduo da população possui a solução
+     * verifica se algum indivï¿½duo da populaï¿½ï¿½o possui a soluï¿½ï¿½o
      */
     public boolean avaliarPopulacao(int aptidaoMaxima) {
     	for(Individuo individuo: this.individuos) {
@@ -71,12 +90,12 @@ public class Populacao {
     }
 
     /**
-     * Número de indivíduos existentes na população
+     * Nï¿½mero de indivï¿½duos existentes na populaï¿½ï¿½o
      */
     public int getNumIndividuos() {
         int num = 0;
-        for (int i = 0; i < individuos.length; i++) {
-            if (individuos[i] != null) {
+        for (int i = 0; i < individuos.size(); i++) {
+            if (individuos.get(i) != null) {
                 num++;
             }
         }
@@ -84,15 +103,15 @@ public class Populacao {
     }
     
     public Individuo getMelhorIndividuo() {
-    	return this.individuos[0];
+    	return this.individuos.get(0);
     }
 
     public int getTamPopulacao() {
-        return tamanhoPopulacao;
+        return individuos.size();
     }
 
     public Individuo getIndividuo(int pos) {
-        return individuos[pos];
+        return individuos.get(pos);
     }
     
 }

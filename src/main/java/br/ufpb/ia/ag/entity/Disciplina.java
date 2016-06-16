@@ -6,6 +6,10 @@ public class Disciplina {
 	private String nome;
 	private Professor professor;
 	
+	public Disciplina(String nome) {
+		this.nome = nome;
+	}
+	
 	public String getCodigo() {
 		return codigo;
 	}
